@@ -1,28 +1,80 @@
 version: "3.9"
 
 services:
-  app:
-    build: .
-    container_name: gin-app
+  # --- APP QA ---
+  app-qa:
+    image: danteol/tp2-docker:v1.0
+    container_name: app-qa
+    environment:
+      APP_PORT: "8080"
+      GIN_MODE: "debug"
+      DB_HOST: "db-qa"
+      DB_PORT: "3306"
+      DB_USER: "root"
+      DB_PASS: "root"
+      DB_NAME: "testdbqa"
+      DB_PARAMS: "parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
     ports:
-      - "8080:8080"
+      - "8081:8080"     # QA en localhost:8081
     depends_on:
-      - db
-    command: sh -c "sleep 15 && ./server"
+      db-qa:
+        condition: service_healthy
 
+  # --- APP PROD ---
+  app-prod:
+    image: danteol/tp2-docker:v1.0
+    container_name: app-prod
+    environment:
+      APP_PORT: "8080"
+      GIN_MODE: "release"
+      DB_HOST: "db-prod"
+      DB_PORT: "3306"
+      DB_USER: "root"
+      DB_PASS: "root"
+      DB_NAME: "testdbprod"
+      DB_PARAMS: "parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
+    ports:
+      - "8080:8080"     # PROD en localhost:8080
+    depends_on:
+      db-prod:
+        condition: service_healthy
 
-  db:
-    image: mysql:latest
-    container_name: mysql-db
+  # --- DB QA ---
+  db-qa:
+    image: mysql:8.0
+    container_name: db-qa
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: testdb
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: testdbqa
     volumes:
-      - db_data:/var/lib/mysql
+      - db_qa_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  # --- DB PROD ---
+  db-prod:
+    image: mysql:8.0
+    container_name: db-prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdbprod
+    volumes:
+      - db_prod_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
 volumes:
-  db_data:
+  db_qa_data:
+  db_prod_data:
