@@ -14,8 +14,8 @@ services:
       DB_PASS: "root"
       DB_NAME: "testdbqa"
       DB_PARAMS: "parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
-    ports:
-      - "8081:8080"     # QA en localhost:8081
+    expose:
+      - "8080"
     depends_on:
       db-qa:
         condition: service_healthy
@@ -33,11 +33,33 @@ services:
       DB_PASS: "root"
       DB_NAME: "testdbprod"
       DB_PARAMS: "parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
-    ports:
-      - "8080:8080"     # PROD en localhost:8080
+    expose:
+      - "8080"
     depends_on:
       db-prod:
         condition: service_healthy
+
+  # --- FRONTEND QA ---
+  # ...existing code...
+  frontend-qa:
+    build: ./frontend
+    container_name: frontend-qa
+    ports:
+      - "3001:5173"
+    environment:
+      - VITE_BACKEND_URL=http://app-qa:8080
+    depends_on:
+      - app-qa
+
+  frontend-prod:
+    build: ./frontend
+    container_name: frontend-prod
+    ports:
+      - "3000:5173"
+    environment:
+      - VITE_BACKEND_URL=http://app-prod:8080
+    depends_on:
+      - app-prod
 
   # --- DB QA ---
   db-qa:
@@ -49,7 +71,7 @@ services:
       MYSQL_DATABASE: testdbqa
     volumes:
       - db_qa_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
       interval: 5s
@@ -67,7 +89,7 @@ services:
       MYSQL_DATABASE: testdbprod
     volumes:
       - db_prod_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
       interval: 5s

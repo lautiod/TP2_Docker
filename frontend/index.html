@@ -1,80 +1,13 @@
 <!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Usuarios</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; }
-    h1 { margin-bottom: 0.5rem; }
-    form { display: flex; gap: 8px; margin-bottom: 16px; }
-    input { flex: 1; padding: 8px; }
-    button { padding: 8px 12px; cursor: pointer; }
-    ul { list-style: none; padding: 0; }
-    li { padding: 6px 0; border-bottom: 1px solid #eee; }
-    .msg { margin: 8px 0; color: #0a0; }
-    .err { margin: 8px 0; color: #c00; }
-  </style>
-</head>
-<body>
-  <h1>Usuarios</h1>
-  <p>Ingresa un nombre y se guardará en MySQL.</p>
-
-  <form id="user-form">
-    <input id="name" type="text" placeholder="Nombre..." required />
-    <button type="submit">Agregar</button>
-  </form>
-
-  <div id="feedback"></div>
-
-  <h2>Lista</h2>
-  <ul id="list"></ul>
-
-  <script>
-    const $form = document.getElementById('user-form');
-    const $name = document.getElementById('name');
-    const $feedback = document.getElementById('feedback');
-    const $list = document.getElementById('list');
-
-    async function loadUsers() {
-      $list.innerHTML = '<li>Cargando...</li>';
-      try {
-        const res = await fetch('/users');
-        const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Respuesta inválida');
-        $list.innerHTML = data.length
-          ? data.map(u => `<li><strong>#${u.id}</strong> ${u.name}</li>`).join('')
-          : '<li>Aún no hay usuarios.</li>';
-      } catch (e) {
-        $list.innerHTML = `<li class="err">Error: ${e.message}</li>`;
-      }
-    }
-
-    $form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = $name.value.trim();
-      if (!name) return;
-
-      $feedback.textContent = '';
-      try {
-        const res = await fetch('/users', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name })
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || 'Error al crear usuario');
-        }
-        $name.value = '';
-        $feedback.innerHTML = '<div class="msg">✔ Usuario insertado</div>';
-        loadUsers();
-      } catch (e) {
-        $feedback.innerHTML = `<div class="err">✖ ${e.message}</div>`;
-      }
-    });
-
-    loadUsers();
-  </script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Front</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
