@@ -30,13 +30,21 @@ _-alpine_ indica que la imagen está basada en Alpine Linux: una distribución u
 
 ## 3) Elección de base de datos y por qué
 
-Elegimos MySQL porque:
+Elegimos MySQL porque es la base que más conocemos y ya hemos trabajado con ella en materias anteriores. Eso nos permitió enfocarnos en Docker y no en aprender una DB nueva.
 
-Es muy usada y tiene imagen oficial fácil de levantar.
+**PROs de MySQL:**
 
-Soporta scripts de inicio (para crear tablas/datos al arrancar).
+Tiene imagen oficial en Docker que funciona bien.
 
-Su carpeta de datos es clara (/var/lib/mysql), lo que facilita persistir.
+Permite cargar scripts de inicio fácilmente (carpeta /docker-entrypoint-initdb.d/).
+
+Es simple de persistir: sus datos viven en /var/lib/mysql, donde montamos los volúmenes.
+
+**Cómo la usamos:**
+
+Un contenedor MySQL para QA (testdbqa) y otro para PROD (testdbprod), cada uno en su red y con su volumen propio.
+
+Un init.sql para crear la base/tablas al primer arranque.
 
 ## 4) Estructura del Dockerfile y justificación
 
