@@ -6,11 +6,11 @@ Elegimos una aplicación web simple de usuarios (crear y listar) y decidimos des
 
 Seleccionamos estas tecnologías porque ya las conocíamos y las usamos en materias anteriores, lo que nos permitió enfocarnos en la containerización más que en aprender un stack nuevo.
 
-  **Frontend:** React + Vite (rápido para probar).
+ - **Frontend:** React + Vite (rápido para probar).
 
-  **Backend:** Go con Gin (liviano y fácil de ejecutar).
+ - **Backend:** Go con Gin (liviano y fácil de ejecutar).
 
-  **Base de datos:** MySQL.
+ - **Base de datos:** MySQL.
 
 La carpeta del proyecto tiene dos partes: Frontend/ y Backend/.
 
