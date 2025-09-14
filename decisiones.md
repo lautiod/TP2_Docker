@@ -20,11 +20,11 @@ Levantamos dos entornos: QA y PROD. Ambos usan las mismas imágenes, pero se com
 
 ## 2) Elección de imagen base y por qué
 
-- **Backend:** partimos de golang:1.23-alpine para compilar y correr el servidor.
+1. **Backend:** partimos de golang:1.23-alpine para compilar y correr el servidor.
 
-- **Frontend:** usamos node:20-alpine para instalar y arrancar Vite.
+2. **Frontend:** usamos node:20-alpine para instalar y arrancar Vite.
 
-- **Base de datos:** mysql:8.0 (imagen oficial, estable y conocida).
+3. **Base de datos:** mysql:8.0 (imagen oficial, estable y conocida).
 
 _-alpine_ indica que la imagen está basada en Alpine Linux: una distribución ultraliviana pensada para que los contenedores arranquen más rápido.
 
@@ -34,17 +34,17 @@ Elegimos MySQL porque es la base que más conocemos y ya hemos trabajado con ell
 
 **PROs de MySQL:**
 
-Tiene imagen oficial en Docker que funciona bien.
+- Tiene imagen oficial en Docker que funciona bien.
 
-Permite cargar scripts de inicio fácilmente (carpeta /docker-entrypoint-initdb.d/).
+- Permite cargar scripts de inicio fácilmente (carpeta /docker-entrypoint-initdb.d/).
 
-Es simple de persistir: sus datos viven en /var/lib/mysql, donde montamos los volúmenes.
+- Es simple de persistir: sus datos viven en /var/lib/mysql, donde montamos los volúmenes.
 
 **Cómo la usamos:**
 
-Un contenedor MySQL para QA (testdbqa) y otro para PROD (testdbprod), cada uno en su red y con su volumen propio.
+- Un contenedor MySQL para QA (testdbqa) y otro para PROD (testdbprod), cada uno en su red y con su volumen propio.
 
-Un init.sql para crear la base/tablas al primer arranque.
+- Un init.sql para crear la base/tablas al primer arranque.
 
 ## 4) Estructura del Dockerfile y justificación
 
