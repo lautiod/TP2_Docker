@@ -1,29 +1,76 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
+# azure-pipelines.yml (raíz del repo)
 trigger:
-- main
+  branches:
+    include:
+      - main
 
-resources:
-- repo: self
+# Si tu agente está en el pool TP4-ADO
+pool:
+  name: TP4-ADO
 
+# Variables útiles (ajustá si cambia tu estructura)
 variables:
-  tag: '$(Build.BuildId)'
+  FRONTEND_DIR: 'frontend'
+  BACKEND_DIR: 'backend'
+  NODE_VERSION: '18.x'     # o la versión que uses
+  GO_VERSION: '1.22.x'     # o la versión que uses
 
 stages:
-- stage: Build
-  displayName: Build image
+# ========== CI ==========
+- stage: CI
+  displayName: CI
   jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: ubuntu-latest
+
+  # --- Build Frontend (React) ---
+  - job: build_frontend
+    displayName: Build Frontend
     steps:
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/backend/dockerfile'
-        tags: |
-          $(tag)
+      # Node (instala versión de Node en el agente)
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '$(NODE_VERSION)'
+        displayName: 'Use Node $(NODE_VERSION)'
+
+      - script: |
+          cd $(FRONTEND_DIR)
+          npm ci
+          npm run build
+        displayName: 'npm ci && npm run build (frontend)'
+
+      # Publica artefacto: carpeta de build de Vite/React (suele ser "dist")
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(FRONTEND_DIR)/dist'
+          artifact: 'frontend_dist'
+          publishLocation: 'pipeline'
+        displayName: 'Publish artifact: frontend_dist'
+
+  # --- Build Backend (Go) ---
+  - job: build_backend
+    displayName: Build Backend
+    steps:
+      # Go (instala versión de Go en el agente)
+      - task: GoTool@0
+        inputs:
+          version: '$(GO_VERSION)'
+        displayName: 'Use Go $(GO_VERSION)'
+
+      - script: |
+          cd $(BACKEND_DIR)
+          go env
+          go mod download
+          go test ./...
+          mkdir -p bin
+          # Ajustá el paquete/entrypoint según tu proyecto:
+          # si tenés cmd/api/main.go, por ejemplo:
+          # go build -o bin/app ./cmd/api
+          go build -o bin/app .
+        displayName: 'go mod download, test & build (backend)'
+
+      # Publica artefacto: binarios del backend
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(BACKEND_DIR)/bin'
+          artifact: 'backend_bin'
+          publishLocation: 'pipeline'
+        displayName: 'Publish artifact: backend_bin'
