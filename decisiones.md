@@ -42,16 +42,41 @@ Elegimos MySQL porque es la base que más conocemos y ya hemos trabajado con ell
 
 **Cómo la usamos:**
 
-- Un contenedor MySQL para QA (testdbqa) y otro para PROD (testdbprod), cada uno en su red y con su volumen propio.
+- Dos contenedores para los entornos de QA y PROD, cada uno con su propia base de datos y volumen. 
 
 - Un init.sql para crear la base/tablas al primer arranque.
 
 ## 4) Estructura del Dockerfile y justificación
 
-Backend: copia módulos, instala dependencias, copia el código, compila y expone el puerto de la API.
-Frontend: instala dependencias, copia el código y arranca el servidor de Vite.
+La idea fue tener imágenes simples y repetibles: que construyan igual en cualquier máquina, sin depender del entorno local.
 
-La idea es tener pasos simples y repetibles para construir las imágenes sin depender de la máquina local.
+**Backend:**
+1. _FROM golang:1.23-alpine_: imagen oficial que ya trae todo para compilar Go, de forma liviana gracias Alpine.
+
+2. _WORKDIR /app:_ carpeta de trabajo clara dentro del contenedor.
+
+3. _COPY go.mod go.sum + go mod download:_ primero copiamos dependencias para aprovechar la caché; si el código cambia pero las deps no, esta capa se reutiliza.
+
+4. _COPY . .:_ copiamos el resto del código.
+
+5. _go build -o server:_ generamos un binario listo para correr.
+
+6. _EXPOSE 8080:_ documenta el puerto que usa la API.
+
+7. _CMD ["./server"]:_ comando de arranque simple y directo.
+
+**Frontend**
+1. _node:20-alpine:_ versión liviana de Node, rápida de bajar y suficiente para el TP.
+
+2. _WORKDIR /frontend:_ orden en el proyecto.
+
+3. _COPY package*.json + npm install:_ instalamos dependencias primero (mejor caché).
+
+4. _COPY . .:_ copiamos el resto del front.
+
+5. _EXPOSE 5173:_ puerto del dev server de Vite.
+
+6. _CMD ["npm","run","dev"]:_ levantamos Vite también en PROD a efectos del TP, para mantener todo simple.
 
 ## 5) Configuración de QA y PROD (variables de entorno)
 
