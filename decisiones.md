@@ -11,6 +11,8 @@ Backend: Go con Gin (liviano y fácil de ejecutar).
 Base de datos: MySQL.
 
 La carpeta del proyecto tiene dos partes: Frontend/ y Backend/.
+<img width="307" height="168" alt="image" src="https://github.com/user-attachments/assets/4da39cc5-bd84-4b34-97ee-fc6397fb45f0" />
+
 
 ## 2) Elección de imagen base y por qué
 
