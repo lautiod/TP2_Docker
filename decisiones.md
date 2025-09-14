@@ -2,18 +2,21 @@
 
 ## 1) Elección de la aplicación y tecnología utilizada
 
-Hicimos una app sencilla de usuarios para practicar la containerización:
+Elegimos una aplicación web simple de usuarios (crear y listar) y decidimos desarrollarla desde cero para entender mejor cada parte del proceso y refrescar conocimientos.
 
-Frontend: React + Vite (rápido para probar).
+Seleccionamos estas tecnologías porque ya las conocíamos y las usamos en materias anteriores, lo que nos permitió enfocarnos en la containerización más que en aprender un stack nuevo.
 
-Backend: Go con Gin (liviano y fácil de ejecutar).
+  **Frontend:** React + Vite (rápido para probar).
 
-Base de datos: MySQL.
+  **Backend:** Go con Gin (liviano y fácil de ejecutar).
+
+  **Base de datos:** MySQL.
 
 La carpeta del proyecto tiene dos partes: Frontend/ y Backend/.
 
 <img width="307" height="168" alt="image" src="https://github.com/user-attachments/assets/4da39cc5-bd84-4b34-97ee-fc6397fb45f0" />
 
+Levantamos dos entornos: QA y PROD. Ambos usan las mismas imágenes, pero se comportan distinto gracias a variables de entorno. Cada entorno tiene su propia base de datos y su propia red para que no se mezclen.
 
 ## 2) Elección de imagen base y por qué
 
