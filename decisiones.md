@@ -1,4 +1,4 @@
-# Decisiones del TP (Docker)
+# Decisiones del TP 
 
 ## 1) Elección de la aplicación y tecnología utilizada
 
@@ -6,9 +6,9 @@ Elegimos una aplicación web simple de usuarios (crear y listar) y decidimos des
 
 Seleccionamos estas tecnologías porque ya las conocíamos y las usamos en materias anteriores, lo que nos permitió enfocarnos en la containerización más que en aprender un stack nuevo.
 
- - **Frontend:** React + Vite (rápido para probar).
+ - **Frontend:** React + Vite.
 
- - **Backend:** Go con Gin (liviano y fácil de ejecutar).
+ - **Backend:** Go con Gin.
 
  - **Base de datos:** MySQL.
 
@@ -20,13 +20,13 @@ Levantamos dos entornos: QA y PROD. Ambos usan las mismas imágenes, pero se com
 
 ## 2) Elección de imagen base y por qué
 
-Backend: partimos de golang:1.22 para compilar y correr el servidor.
+- **Backend:** partimos de golang:1.23-alpine para compilar y correr el servidor.
 
-Frontend: usamos node:20-alpine para instalar y arrancar Vite.
+- **Frontend:** usamos node:20-alpine para instalar y arrancar Vite.
 
-Base de datos: mysql:8.0 (imagen oficial, estable y conocida).
+- **Base de datos:** mysql:8.0 (imagen oficial, estable y conocida).
 
-(Nota: para un “prod real” podríamos achicar las imágenes, pero para el TP priorizamos simplicidad.)
+_-alpine_ indica que la imagen está basada en Alpine Linux: una distribución ultraliviana pensada para que los contenedores arranquen más rápido.
 
 ## 3) Elección de base de datos y por qué
 
