@@ -1,70 +1,72 @@
-version: "3.9"
+# compose.yaml (podés omitir "version" en Compose v2)
+
+# ---- Reutilizables  ----
+x-be-env: &be_env
+  APP_PORT: "8080"
+  DB_PORT: "3306"
+  DB_USER: "root"
+  DB_PASS: "root"
+  DB_PARAMS: "parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
+
+x-mysql-hc: &mysql_hc
+  test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+  interval: 5s
+  timeout: 3s
+  retries: 10
+  start_period: 10s
+
+networks:
+  qa-net:
+  prod-net:
 
 services:
-  # --- APP QA ---
+  # --- BACKEND QA ---
   app-qa:
-    image: danteol/tp2-docker:v1.0
-    container_name: app-qa
+    image: danteol/tp2-backend:dev
     environment:
-      APP_PORT: "8080"
+      <<: *be_env
       GIN_MODE: "debug"
       DB_HOST: "db-qa"
-      DB_PORT: "3306"
-      DB_USER: "root"
-      DB_PASS: "root"
       DB_NAME: "testdbqa"
-      DB_PARAMS: "parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
-    expose:
-      - "8080"
     depends_on:
       db-qa:
         condition: service_healthy
+    networks: [qa-net]
 
-  # --- APP PROD ---
+  # --- BACKEND PROD ---
   app-prod:
-    image: danteol/tp2-docker:v1.0
-    container_name: app-prod
+    image: danteol/tp2-backend:v1.0.0
     environment:
-      APP_PORT: "8080"
+      <<: *be_env
       GIN_MODE: "release"
       DB_HOST: "db-prod"
-      DB_PORT: "3306"
-      DB_USER: "root"
-      DB_PASS: "root"
       DB_NAME: "testdbprod"
-      DB_PARAMS: "parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
-    expose:
-      - "8080"
     depends_on:
       db-prod:
         condition: service_healthy
+    networks: [prod-net]
 
   # --- FRONTEND QA ---
-  # ...existing code...
   frontend-qa:
-    build: ./frontend
-    container_name: frontend-qa
-    ports:
-      - "3001:5173"
+    image: danteol/tp2-frontend:dev
+    ports: ["3001:5173"]
     environment:
-      - VITE_BACKEND_URL=http://app-qa:8080
-    depends_on:
-      - app-qa
+      VITE_BACKEND_URL: "http://app-qa:8080"
+    depends_on: [app-qa]
+    networks: [qa-net]
 
+  # --- FRONTEND PROD ---
   frontend-prod:
-    build: ./frontend
-    container_name: frontend-prod
-    ports:
-      - "3000:5173"
+    image: danteol/tp2-frontend:v1.0.0
+    ports: ["3000:5173"]
     environment:
-      - VITE_BACKEND_URL=http://app-prod:8080
-    depends_on:
-      - app-prod
+      VITE_BACKEND_URL: "http://app-prod:8080"
+    depends_on: [app-prod]
+    networks: [prod-net]
 
   # --- DB QA ---
   db-qa:
     image: mysql:8.0
-    container_name: db-qa
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -72,17 +74,12 @@ services:
     volumes:
       - db_qa_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 10s
+    healthcheck: *mysql_hc
+    networks: [qa-net]
 
   # --- DB PROD ---
   db-prod:
     image: mysql:8.0
-    container_name: db-prod
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -90,12 +87,8 @@ services:
     volumes:
       - db_prod_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 10s
+    healthcheck: *mysql_hc
+    networks: [prod-net]
 
 volumes:
   db_qa_data:
