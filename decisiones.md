@@ -162,11 +162,11 @@ Lista de volúmenes con el comando: docker volume ls
 
 ## 9) Problemas y soluciones
 
-La app a veces arrancaba antes que la DB.
+-> La app a veces arrancaba antes que la DB.
 Solución: agregamos un chequeo de salud a MySQL y configuramos que el backend espere a que la DB esté lista.
 
-Evitar mezclar QA y PROD.
+-> Evitar mezclar QA y PROD.
 Solución: usamos redes separadas (una para QA y otra para PROD).
 
-Evitar repetir mucha configuración.
+-> Evitar repetir mucha configuración.
 Solución: reutilizamos bloques de variables comunes en el docker-compose (para no copiar/pegar lo mismo en cada servicio).
