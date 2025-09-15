@@ -143,15 +143,18 @@ Dónde publicamos:
 
 <img width="384" height="851" alt="image" src="https://github.com/user-attachments/assets/c9277a35-2eb0-4821-ade8-928983298c84" />
 
+
 **Contenedores** 
 
 <img width="991" height="495" alt="image" src="https://github.com/user-attachments/assets/3ca2658a-b6d2-4021-a897-6e0d0dd91c3a" />
+
 
 **Volumenes**
 
 Lista de volúmenes con el comando: docker volume ls
 
 <img width="411" height="50" alt="image" src="https://github.com/user-attachments/assets/60ae355f-8cc0-4219-b4c5-7dd359ea2ddb" />
+
 
 **Algunas request**
 
