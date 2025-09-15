@@ -56,4 +56,22 @@ _Dentro de TP2_Docker/frontend_
 
 - Frontend QA: __http://localhost:3001/__
 
+## 4. Conectarese a la base de datos
+
+No es necesario abrir el puerto 3306 al host. Podés entrar al contenedor y usar el cliente mysql que ya trae la imagen.
+Para ello ejecutar los siguientes comandos abriendo una consola:
+
+**DB de QA**
+> docker exec -it tp2_docker-db-qa-1 mysql -uroot -proot
+
+__Ya dentro de MySQL__
+> SHOW DATABASES;
+> USE testdbqa;
+> SHOW TABLES;
+> SELECT * FROM users;
+
+
+
+
+
 
