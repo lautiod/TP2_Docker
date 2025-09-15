@@ -38,8 +38,22 @@ _Dentro de TP2_Docker/frontend_
 
 **Levantar todo**
 
-> docker compose pull              # trae las imágenes si están en Docker Hub
-> docker compose up -d             # levanta QA y PROD + bases de datos
-> docker compose ps                # ver estado (db-qa / db-prod deberían verse healthy)
+> docker compose pull              __trae las imágenes si están en Docker Hub__
+
+> docker compose up -d             __levanta QA y PROD + bases de datos__
+
+> docker compose ps                __ver estado (db-qa / db-prod deberían verse healthy)__
+
+**Parar y Levantar de nuevo**
+
+> docker compose down              __apaga todo (no borra volúmenes)__
+
+> docker compose up -d
+
+## 3. Acceder a la aplicación
+
+- Frontend PROD: __http://localhost:3000/__
+
+- Frontend QA: __http://localhost:3001/__
 
 
