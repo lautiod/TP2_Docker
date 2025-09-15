@@ -32,5 +32,14 @@ _Dentro de TP2_Docker/frontend_
 
 > docker push danteol/tp2-frontend:dev
 
-| docker push danteol/tp2-frontend:v1.0.0
+> docker push danteol/tp2-frontend:v1.0.0
+
+## 2. Ejecutar contenedores
+
+**Levantar todo**
+
+> docker compose pull              # trae las imágenes si están en Docker Hub
+> docker compose up -d             # levanta QA y PROD + bases de datos
+> docker compose ps                # ver estado (db-qa / db-prod deberían verse healthy)
+
 
