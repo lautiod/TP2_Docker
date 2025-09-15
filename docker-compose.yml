@@ -27,7 +27,7 @@ services:
       <<: *be_env
       GIN_MODE: "debug"
       DB_HOST: "db-qa"
-      DB_NAME: "dbqa"
+      DB_NAME: "testdbqa"
     depends_on:
       db-qa:
         condition: service_healthy
@@ -40,7 +40,7 @@ services:
       <<: *be_env
       GIN_MODE: "release"
       DB_HOST: "db-prod"
-      DB_NAME: "dbprod"
+      DB_NAME: "testdbprod"
     depends_on:
       db-prod:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: dbqa
+      MYSQL_DATABASE: testdbqa
     volumes:
       - db_qa_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -83,7 +83,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: dbprod
+      MYSQL_DATABASE: testdbprod
     volumes:
       - db_prod_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
