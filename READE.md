@@ -13,18 +13,24 @@
 _Dentro de TP2_Docker/backend_
 
 | docker build -t danteol/tp2-backend:dev .
+
 | docker build -t danteol/tp2-backend:v1.0.0 .
 
 _Dentro de TP2_Docker/frontend_
 
 | docker build -t danteol/tp2-frontend:dev .
+
 | docker build -t danteol/tp2-frontend:v1.0.0 .
 
 **Opcional: publicar en DockerHub**
 
 | docker login
+
 | docker push danteol/tp2-backend:dev
+
 | docker push danteol/tp2-backend:v1.0.0
+
 | docker push danteol/tp2-frontend:dev
+
 | docker push danteol/tp2-frontend:v1.0.0
 
