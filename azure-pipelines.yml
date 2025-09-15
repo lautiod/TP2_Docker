@@ -1,76 +1,111 @@
-# azure-pipelines.yml (raíz del repo)
 trigger:
   branches:
-    include:
-      - main
+    include: [ main ]
 
-# Si tu agente está en el pool TP4-ADO
 pool:
-  name: TP4-ADO
+  name: TP4-ADO   # tu pool con el agente self-hosted
 
-# Variables útiles (ajustá si cambia tu estructura)
 variables:
   FRONTEND_DIR: 'frontend'
   BACKEND_DIR: 'backend'
-  NODE_VERSION: '18.x'     # o la versión que uses
-  GO_VERSION: '1.22.x'     # o la versión que uses
+  NODE_VERSION: '18.x'
+  GO_VERSION: '1.23.x'
+  DOCKERHUB_NAMESPACE: 'danteol'
+  FRONTEND_IMAGE: 'tp2-frontend'
+  BACKEND_IMAGE: 'tp2-backend'
 
 stages:
-# ========== CI ==========
+# ======= CI =======
 - stage: CI
   displayName: CI
   jobs:
+    - job: build_frontend
+      displayName: Build Frontend
+      steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '$(NODE_VERSION)'
+          displayName: 'Use Node $(NODE_VERSION)'
 
-  # --- Build Frontend (React) ---
-  - job: build_frontend
-    displayName: Build Frontend
-    steps:
-      # Node (instala versión de Node en el agente)
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '$(NODE_VERSION)'
-        displayName: 'Use Node $(NODE_VERSION)'
+        - script: |
+            cd $(FRONTEND_DIR)
+            npm ci
+            npm run build
+          displayName: 'npm ci && npm run build (frontend)'
 
-      - script: |
-          cd $(FRONTEND_DIR)
-          npm ci
-          npm run build
-        displayName: 'npm ci && npm run build (frontend)'
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: '$(FRONTEND_DIR)/dist'
+            artifact: 'frontend_dist'
+            publishLocation: 'pipeline'
+          displayName: 'Publish artifact: frontend_dist'
 
-      # Publica artefacto: carpeta de build de Vite/React (suele ser "dist")
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(FRONTEND_DIR)/dist'
-          artifact: 'frontend_dist'
-          publishLocation: 'pipeline'
-        displayName: 'Publish artifact: frontend_dist'
+    - job: build_backend
+      displayName: Build Backend
+      steps:
+        - task: GoTool@0
+          inputs:
+            version: '$(GO_VERSION)'
+          displayName: 'Use Go $(GO_VERSION)'
 
-  # --- Build Backend (Go) ---
-  - job: build_backend
-    displayName: Build Backend
-    steps:
-      # Go (instala versión de Go en el agente)
-      - task: GoTool@0
-        inputs:
-          version: '$(GO_VERSION)'
-        displayName: 'Use Go $(GO_VERSION)'
+        - script: |
+            cd $(BACKEND_DIR)
+            go env
+            go mod download
+            go test ./...
+            mkdir -p bin
+            # Ajustá si tu main está en otra ruta:
+            go build -o bin/app ./main.go
+          displayName: 'go mod download, test & build (backend)'
 
-      - script: |
-          cd $(BACKEND_DIR)
-          go env
-          go mod download
-          go test ./...
-          mkdir -p bin
-          # Ajustá el paquete/entrypoint según tu proyecto:
-          # si tenés cmd/api/main.go, por ejemplo:
-          # go build -o bin/app ./cmd/api
-          go build -o bin/app .
-        displayName: 'go mod download, test & build (backend)'
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: '$(BACKEND_DIR)/bin'
+            artifact: 'backend_bin'
+            publishLocation: 'pipeline'
+          displayName: 'Publish artifact: backend_bin'
 
-      # Publica artefacto: binarios del backend
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(BACKEND_DIR)/bin'
-          artifact: 'backend_bin'
-          publishLocation: 'pipeline'
-        displayName: 'Publish artifact: backend_bin'
+# ======= Docker build & push (opcional) =======
+- stage: Docker
+  displayName: Build & Push Docker Images
+  dependsOn: CI
+  condition: succeeded()
+  jobs:
+    - job: dockerize
+      displayName: Docker build & push
+      steps:
+        - script: |
+            docker version
+          displayName: 'Check Docker is available'
+          continueOnError: false
+
+        - script: |
+            echo "$(DOCKERHUB_TOKEN)" | docker login -u "$(DOCKERHUB_USERNAME)" --password-stdin
+          displayName: 'Docker login (Docker Hub)'
+          env:
+            DOCKERHUB_USERNAME: $(DOCKERHUB_USERNAME)
+            DOCKERHUB_TOKEN: $(DOCKERHUB_TOKEN)
+
+        # Backend
+        - script: |
+            docker build -f backend/Dockerfile -t $(DOCKERHUB_NAMESPACE)/$(BACKEND_IMAGE):dev .
+            docker tag $(DOCKERHUB_NAMESPACE)/$(BACKEND_IMAGE):dev $(DOCKERHUB_NAMESPACE)/$(BACKEND_IMAGE):build-$(Build.BuildId)
+            docker push $(DOCKERHUB_NAMESPACE)/$(BACKEND_IMAGE):dev
+            docker push $(DOCKERHUB_NAMESPACE)/$(BACKEND_IMAGE):build-$(Build.BuildId)
+          displayName: 'Build & Push backend image'
+
+        # Frontend
+        - script: |
+            docker build -f frontend/Dockerfile -t $(DOCKERHUB_NAMESPACE)/$(FRONTEND_IMAGE):dev .
+            docker tag $(DOCKERHUB_NAMESPACE)/$(FRONTEND_IMAGE):dev $(DOCKERHUB_NAMESPACE)/$(FRONTEND_IMAGE):build-$(Build.BuildId)
+            docker push $(DOCKERHUB_NAMESPACE)/$(FRONTEND_IMAGE):dev
+            docker push $(DOCKERHUB_NAMESPACE)/$(FRONTEND_IMAGE):build-$(Build.BuildId)
+          displayName: 'Build & Push frontend image'
+
+        # (Opcional) publicar el docker-compose como artefacto
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: 'docker-compose.yaml'
+            artifact: 'compose'
+            publishLocation: 'pipeline'
+          displayName: 'Publish artifact: docker-compose.yaml'
