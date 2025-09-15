@@ -1,5 +1,11 @@
 # Decisiones del TP 
 
+- **1.** Stack elegido y estructura del repo.
+  
+- **2.** Diseño del pipeline (stages, jobs, artefactos).
+  
+- **3.** Evidencias (capturas).
+  
 ## 1) Elección de la aplicación y tecnología utilizada
 
 Elegimos una aplicación web simple de usuarios (crear y listar) y decidimos desarrollarla desde cero para entender mejor cada parte del proceso y refrescar conocimientos.
