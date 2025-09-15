@@ -89,13 +89,26 @@ Así evitamos repetir configuración, mantenemos el archivo más corto y claro, 
 
 Además, cada entorno corre en su propia red para mantenerlos aislados y evitar cruces accidentales.
 
+**Variables comunes**
+
+<img width="870" height="178" alt="image" src="https://github.com/user-attachments/assets/8ada69a8-8701-4e3e-9838-03ff4b888721" />
+
+**Ejemplo: Especificación para Backend QA**
+
+<img width="413" height="377" alt="image" src="https://github.com/user-attachments/assets/0a4f3759-499a-472e-8840-3b7c6aa52807" />
+
 ## 6) Estrategia de persistencia de datos (volúmenes)
 
-Para que los datos no se pierdan al reiniciar contenedores:
+Para que la información no se pierda al reiniciar o recrear contenedores, usamos volúmenes de Docker.
+Cada entorno tiene su propio volumen de MySQL, montados en __/var/lib/mysql__, por lo que QA y PROD no comparten datos:
 
-Montamos un volumen por entorno en /var/lib/mysql.
+- QA → db_qa_data 
 
-Cargamos un script de inicio (init.sql) en /docker-entrypoint-initdb.d/ para crear la base/tablas al primer arranque.
+- PROD → db_prod_data
+
+Además, cargamos un script de inicio (init.sql) en __/docker-entrypoint-initdb.d/.__
+Ese script se ejecuta solo la primera vez que se crea el volumen (sirve para crear la base/tablas o datos de ejemplo).
+Si el contenedor se reinicia y el volumen ya existe, los datos quedan tal cual.
 
 ## 7) Estrategia de versionado y publicación
 
