@@ -80,32 +80,14 @@ La idea fue tener imágenes simples y repetibles: que construyan igual en cualqu
 
 ## 5) Configuración de QA y PROD (variables de entorno)
 
-Levantamos QA y PROD desde la misma imagen para frontend y para backend.
-La diferencia entre entornos la logramos solo con variables de entorno (no cambiamos el código ni la imagen).
+Levantamos QA y PROD a partir de la misma imagen tanto para el frontend como para el backend.
+La diferencia de comportamiento entre entornos se logra exclusivamente usando variables de entorno (no cambiamos código ni reconstruimos otra imagen).
 
-**Backend**
+En el docker-compose agrupamos las variables comunes en un bloque reutilizable (anchors de YAML).
+Luego, cada servicio de QA y PROD hereda ese bloque y agrega/sobrescribe solo sus variables propias del entorno.
+Así evitamos repetir configuración, mantenemos el archivo más corto y claro, y garantizamos que ambos entornos partan de la misma base.
 
--> Comunes: puerto de la app, usuario/clave y parámetros de MySQL.
-
--> QA: GIN_MODE=debug, DB_HOST=db-qa, DB_NAME=testdbqa.
-
--> PROD: GIN_MODE=release, DB_HOST=db-prod, DB_NAME=testdbprod.
-
-**Frontend**
-
-Usamos VITE_BACKEND_URL para apuntar al backend del entorno:
-
--> QA: http://app-qa:8080
-
--> PROD: http://app-prod:8080
-
-El proxy de Vite reenvía todo lo de /api al backend correspondiente, así el navegador no tiene problemas de CORS.
-
-**Para no repetir**
-
-En el docker-compose reutilizamos bloques con anchors de YAML (variables “comunes” + lo que cambia en QA/PROD).
-
--> Resultado: un archivo más simple y fácil de leer.
+Además, cada entorno corre en su propia red para mantenerlos aislados y evitar cruces accidentales.
 
 ## 6) Estrategia de persistencia de datos (volúmenes)
 
