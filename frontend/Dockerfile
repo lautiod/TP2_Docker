@@ -1,17 +1,20 @@
-# --- build stage ---
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY frontend/package*.json ./
-RUN npm ci
-COPY frontend/ .
-RUN npm run build   # genera /app/dist
+# Usa una imagen base oficial de Node.js con la versión 18-alpine
+FROM node:20-alpine
 
-# --- runtime stage ---
-FROM node:18-alpine
-WORKDIR /app
-# vite preview sirve estáticos; si preferís otro server, avísame
-RUN npm i -g vite
-COPY --from=build /app/dist ./dist
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /frontend
+
+# Copiar los archivos package.json y package-lock.json (si existe)
+COPY package*.json ./
+
+# Instalar las dependencias
+RUN npm install
+
+# Copiar el resto de los archivos al contenedor
+COPY . .
+
+# Exponer el puerto en el que se ejecutará el frontend
 EXPOSE 5173
-# Preview usa 4173 por defecto; lo forzamos a 5173 para tu compose
-CMD ["vite", "preview", "--host", "0.0.0.0", "--port", "5173"]
+
+# Comando para iniciar la aplicación
+CMD ["npm", "run", "dev"]
