@@ -112,37 +112,50 @@ Si el contenedor se reinicia y el volumen ya existe, los datos quedan tal cual.
 
 ## 7) Estrategia de versionado y publicación
 
-Publicamos las imágenes en Docker Hub con dos etiquetas:
+Buscamos tener una forma simple de distinguir lo que está “en prueba” de lo que consideramos “estable”..
 
-:dev → la usamos en QA (para probar).
+Las estiquetas que usamos fueron:
 
-v1.0.0 → la usamos en PROD (versión estable).
+- :dev → para QA (build en prueba; se puede actualizar seguido).
 
-Para este TP, ambas etiquetas pueden apuntar a la misma imagen, así mostramos que con variables la app se comporta distinto según el entorno. En un caso real, :dev se va actualizando y v1.0.0 queda fija.
+- v1.0.0 → para PROD (corte estable; no se sobreescribe).
+
+Primero construimos la imagen una vez y la publicamos en Docker Hub con ambas etiquetas. Y en docker-compose:
+
+-> QA usa :dev.
+
+-> PROD usa v1.0.0.
+
+Dónde publicamos:
+
+- Backend: danteol/tp2-backend:{dev | v1.0.0}
+
+- Frontend: danteol/tp2-frontend:{dev | v1.0.0}
+
+<img width="262" height="190" alt="image" src="https://github.com/user-attachments/assets/3e0d456d-2b64-41c5-b5db-4b66793b6db5" />
+
 
 ## 8) Evidencia de funcionamiento
 
-(Acá agregaremos capturas o recortes de logs)
+**Cada uno de los frontends**
 
-App corriendo en ambos entornos
+<img width="516" height="855" alt="image" src="https://github.com/user-attachments/assets/a3cbbce4-7931-4f0f-8b00-7cd3866eb9d5" />
 
-Captura del frontend QA (título “Front QA”) y del frontend PROD (título “Front PROD”).
+<img width="384" height="851" alt="image" src="https://github.com/user-attachments/assets/c9277a35-2eb0-4821-ade8-928983298c84" />
 
-Salida de docker compose ps mostrando todos los servicios “up”.
+**Contenedores** 
 
-Conexión exitosa a la base
+<img width="991" height="495" alt="image" src="https://github.com/user-attachments/assets/3ca2658a-b6d2-4021-a897-6e0d0dd91c3a" />
 
-Logs de db-qa y db-prod indicando que están ready / healthy.
+**Volumenes**
 
-Inserción y listado de usuarios desde el frontend sin errores (una captura alcanza).
+Lista de volúmenes con el comando: docker volume ls
 
-Datos que persisten entre reinicios
+<img width="411" height="50" alt="image" src="https://github.com/user-attachments/assets/60ae355f-8cc0-4219-b4c5-7dd359ea2ddb" />
 
-Insertar un usuario en QA.
+**Algunas request**
 
-Reiniciar solo la base de QA: docker compose restart db-qa.
-
-Volver a listar y mostrar que el usuario sigue ahí.
+<img width="1183" height="161" alt="image" src="https://github.com/user-attachments/assets/e1be012d-8d06-41d0-97da-5fe2e0fadb23" />
 
 ## 9) Problemas y soluciones
 
