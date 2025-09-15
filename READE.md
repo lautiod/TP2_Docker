@@ -59,16 +59,60 @@ _Dentro de TP2_Docker/frontend_
 ## 4. Conectarese a la base de datos
 
 No es necesario abrir el puerto 3306 al host. Podés entrar al contenedor y usar el cliente mysql que ya trae la imagen.
+
 Para ello ejecutar los siguientes comandos abriendo una consola:
 
 **DB de QA**
 > docker exec -it tp2_docker-db-qa-1 mysql -uroot -proot
 
 __Ya dentro de MySQL__
+
 > SHOW DATABASES;
+
 > USE testdbqa;
+
 > SHOW TABLES;
+
 > SELECT * FROM users;
+
+**DB de PROD**
+> docker exec -it tp2_docker-db-prod-1 mysql -uroot -proot
+
+__Ya dentro de MySQL__
+
+> SHOW DATABASES;
+
+> USE testdbprod;
+
+> SHOW TABLES;
+
+> SELECT * FROM users;
+
+## 5. Verificar que todo funciona correctamente
+
+### La app debe estar corriendo en ambos entornos
+
+Abrí http://localhost:3001 (QA) y http://localhost:3000 (PROD).
+
+En cada uno, probá crear y listar usuarios.
+
+-> En QA deberías ver el título/indicador de QA.
+
+-> En PROD, el de PROD.
+
+### Conexión exitoso con la base de datos
+
+Si podés agregar usuarios desde el front y luego listarlos, la API está conectando bien con MySQL.
+
+También podés chequear el estado de MySQL atráves del siguiente comando:
+
+> docker ps -a    __debería decir (healthy) para db-qa y db-prod__
+
+**Persistencia de datos:** si reiniciás o eliminás los contenedores, los datos de la base se mantienen gracias a los volúmenes.
+
+En caso de que quieras eliminar los contenedores junto a los volumenes, ejecuta el siguiente comando:
+
+> docker compose down -v
 
 
 
