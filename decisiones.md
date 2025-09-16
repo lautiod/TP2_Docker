@@ -195,3 +195,7 @@ Solución: usamos redes separadas (una para QA y otra para PROD).
 
 -> Evitar repetir mucha configuración.
 Solución: reutilizamos bloques de variables comunes en el docker-compose (para no copiar/pegar lo mismo en cada servicio).
+
+## 10) Uso de IA
+
+Usamos IA como herramienta de apoyo para resolver problemas de compilación, estructurar y simplificar el docker-compose, responder dudas conceptuales y hallar comandos de Docker pertinentes. Las decisiones técnicas, la configuración final y la validación del funcionamiento las realizamos nosotros.
