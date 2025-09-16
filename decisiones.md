@@ -76,7 +76,7 @@ Elegimos MySQL porque es la base que más conocemos y ya hemos trabajado con ell
 La idea fue tener imágenes simples y repetibles: que construyan igual en cualquier máquina, sin depender del entorno local.
 
 **Backend:**
-1. _FROM golang:1.23-alpine_: imagen oficial que ya trae todo para compilar Go, de forma liviana gracias Alpine.
+1. _FROM golang:1.22: imagen oficial que ya trae todo para compilar Go, de forma liviana gracias Alpine.
 
 2. _WORKDIR /app:_ carpeta de trabajo clara dentro del contenedor.
 
